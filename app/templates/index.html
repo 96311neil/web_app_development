@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>我的食譜</h2>
+    </div>
+    <div class="col-md-4">
+        <form action="{{ url_for('recipe.index') }}" method="GET" class="d-flex">
+            <input class="form-control me-2" type="search" name="q" placeholder="搜尋食譜、食材..." value="{{ q }}">
+            <button class="btn btn-outline-success" type="submit">搜尋</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 側邊標籤篩選 -->
+    <div class="col-md-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h5 class="card-title mb-0">標籤分類</h5>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('recipe.index') }}" class="badge rounded-pill {% if not current_tag %}bg-primary{% else %}bg-secondary{% endif %} tag-badge mb-2">全部</a>
+                {% for tag in tags %}
+                    <a href="{{ url_for('recipe.index', tag=tag.name) }}" 
+                       class="badge rounded-pill {% if current_tag == tag.name %}bg-primary{% else %}bg-secondary{% endif %} tag-badge mb-2">
+                        {{ tag.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- 食譜列表 -->
+    <div class="col-md-9">
+        {% if recipes %}
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for recipe in recipes %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm recipe-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recipe.title }}</h5>
+                            <p class="card-text text-muted text-truncate">{{ recipe.ingredients }}</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ recipe.created_at[:10] }}</small>
+                                <a href="{{ url_for('recipe.detail', id=recipe.id) }}" class="btn btn-sm btn-outline-primary">查看</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                {% if q or current_tag %}找不到符合條件的食譜。{% else %}目前尚無食譜，趕快來新增第一道菜吧！{% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
